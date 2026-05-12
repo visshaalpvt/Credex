@@ -17,7 +17,8 @@ interface ToolRowProps {
 export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
   const selectedTool = AI_TOOLS.find(t => t.name === item.toolName);
 
-  const handleToolChange = (toolName: string) => {
+  const handleToolChange = (toolName: string | null) => {
+    if (!toolName) return;
     const tool = AI_TOOLS.find(t => t.name === toolName);
     if (tool) {
       const defaultPlan = tool.plans[0];
@@ -29,7 +30,8 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
     }
   };
 
-  const handlePlanChange = (planName: string) => {
+  const handlePlanChange = (planName: string | null) => {
+    if (!planName) return;
     const plan = selectedTool?.plans.find(p => p.name === planName);
     if (plan) {
       onUpdate(item.id, { 
@@ -98,7 +100,7 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
         <label className="text-xs font-medium text-muted-foreground ml-1">Frequency</label>
         <Select 
           value={item.usageFrequency} 
-          onValueChange={(v) => onUpdate(item.id, { usageFrequency: v as UsageFrequency })}
+          onValueChange={(v) => onUpdate(item.id, { usageFrequency: (v as UsageFrequency) || 'daily' })}
         >
           <SelectTrigger className="bg-background/50 border-white/10 h-11">
             <SelectValue />
