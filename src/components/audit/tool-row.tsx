@@ -60,8 +60,8 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
       <div className="flex-1 w-full space-y-1.5">
         <label className="text-xs font-medium text-muted-foreground ml-1">AI Tool</label>
         <Select value={item.toolName} onValueChange={handleToolChange}>
-          <SelectTrigger className="bg-background/50 border-white/10 h-11">
-            <SelectValue placeholder="Select Tool" />
+          <SelectTrigger className="bg-[#141218] border-primary/20 h-11 rounded-sm focus:border-cyan-glow focus:ring-cyan-glow/20 transition-all font-display">
+            <SelectValue placeholder="INITIALIZE TOOL" />
           </SelectTrigger>
           <SelectContent>
             {AI_TOOLS.map(tool => (
@@ -74,8 +74,8 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
       <div className="flex-1 w-full space-y-1.5">
         <label className="text-xs font-medium text-muted-foreground ml-1">Plan</label>
         <Select value={item.planName} onValueChange={handlePlanChange} disabled={!item.toolName}>
-          <SelectTrigger className="bg-background/50 border-white/10 h-11">
-            <SelectValue placeholder="Select Plan" />
+          <SelectTrigger className="bg-[#141218] border-primary/20 h-11 rounded-sm focus:border-cyan-glow focus:ring-cyan-glow/20 transition-all font-display">
+            <SelectValue placeholder="SELECT_PLAN" />
           </SelectTrigger>
           <SelectContent>
             {selectedTool?.plans.map(plan => (
@@ -91,7 +91,7 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
           type="number" 
           value={item.teamSize} 
           onChange={handleTeamSizeChange}
-          className="bg-background/50 border-white/10 h-11"
+          className="bg-[#141218] border-primary/20 h-11 rounded-sm focus:border-cyan-glow focus:ring-cyan-glow/20 transition-all font-display"
           min="1"
         />
       </div>
@@ -102,7 +102,7 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
           value={item.usageFrequency} 
           onValueChange={(v) => onUpdate(item.id, { usageFrequency: (v as UsageFrequency) || 'daily' })}
         >
-          <SelectTrigger className="bg-background/50 border-white/10 h-11">
+          <SelectTrigger className="bg-[#141218] border-primary/20 h-11 rounded-sm focus:border-cyan-glow focus:ring-cyan-glow/20 transition-all font-display">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -121,7 +121,7 @@ export default function ToolRow({ item, onUpdate, onRemove }: ToolRowProps) {
           type="number" 
           value={item.monthlySpend} 
           onChange={(e) => onUpdate(item.id, { monthlySpend: parseFloat(e.target.value) || 0 })}
-          className="bg-background/50 border-white/10 h-11"
+          className="bg-[#141218] border-primary/20 h-11 rounded-sm focus:border-cyan-glow focus:ring-cyan-glow/20 transition-all font-display"
         />
       </div>
 

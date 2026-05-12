@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/shared/navbar";
 import Footer from "@/components/shared/footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: "Credex AI Spend Audit | Optimize Your Startup's AI SaaS Costs",
-  description: "Discover hidden AI subscription waste in under 2 minutes. Get a personalized savings report for your startup.",
+  title: "Credex AI Audit | Cinematic Financial Intelligence",
+  description: "High-precision AI subscription audit for mission-critical startup optimization.",
   openGraph: {
     title: "Credex AI Spend Audit",
     description: "Discover hidden AI subscription waste in under 2 minutes.",
@@ -32,14 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}>
+    <html lang="en" className="dark scroll-smooth">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}>
         <Navbar />
         <main className="flex-grow">
           {children}
         </main>
         <Footer />
-        <Toaster position="top-center" />
+        <Toaster theme="dark" position="top-right" richColors />
       </body>
     </html>
   );
