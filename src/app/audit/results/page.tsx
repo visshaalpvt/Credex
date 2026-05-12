@@ -110,44 +110,59 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        <SummaryCards 
-          totalSpend={result.totalSpend} 
-          potentialSavings={result.potentialSavings} 
-          wasteScore={result.wasteScore} 
-        />
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12"
+        >
+          <SummaryCards result={result} />
+        </motion.div>
 
-        <div className="p-6 glass rounded-2xl border-primary/20 bg-primary/5 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Sparkles className="w-24 h-24" />
-          </div>
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            AI Insights Summary
-          </h3>
-          <p className="text-lg leading-relaxed text-foreground/90 max-w-4xl">
-            {isGenerating ? (
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 animate-pulse text-primary" />
-                Generating personalized insights...
-              </span>
-            ) : aiSummary || (
-              <>
-                Based on our analysis, your startup is spending <span className="font-bold text-primary">${result.totalSpend.toFixed(2)}</span> per month on AI tools. 
-                We found <span className="font-bold text-secondary">${result.potentialSavings.toFixed(2)}</span> in monthly waste.
-              </>
-            )}
-          </p>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-2 glass rounded-2xl border-white/5 p-8"
+          >
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Optimization Analysis
+            </h3>
+            <SavingsChart items={items} result={result} />
+          </motion.div>
 
-        <div className="relative">
-          {!userEmail && (
-            <div className="absolute inset-0 z-10 backdrop-blur-sm bg-background/20 flex flex-col items-center justify-center rounded-2xl border border-white/5 p-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4">
-                <Lock className="w-8 h-8" />
+          <motion.div 
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="glass rounded-2xl border-white/5 p-8 overflow-hidden relative"
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Lock className="w-12 h-12" />
+            </div>
+            <h3 className="text-xl font-bold mb-6">Spend Breakdown</h3>
+            <div className={`space-y-4 ${!userEmail ? "blur-md select-none pointer-events-none" : ""}`}>
+              {items.map((item, idx) => (
+                <motion.div 
+                  key={item.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + (idx * 0.1) }}
+                  className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5"
+                >
+                  <span className="font-medium">{item.toolName}</span>
+                  <span className="text-primary font-bold">${item.monthlySpend}</span>
+                </motion.div>
+              ))}
+            </div>
+            {!userEmail && (
+              <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+                <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
+                  <p className="text-sm font-medium">Unlock full breakdown</p>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold mb-2">Detailed Breakdown Locked</h3>
-              <p className="text-muted-foreground mb-6 max-w-sm">
-                Unlock your full recommendations list and visual charts by entering your email.
               </p>
               <Button onClick={() => setIsModalOpen(true)} className="bg-primary shadow-premium">
                 Unlock Full Report
