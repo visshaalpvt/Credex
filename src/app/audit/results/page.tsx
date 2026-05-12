@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { performAudit } from "@/lib/audit-engine";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { AuditItem, AuditResult } from "@/types";
-import { performAudit } from "@/lib/audit-engine";
-import SummaryCards from "@/components/results/summary-cards";
-import SavingsChart from "@/components/results/savings-chart";
-import RecommendationsList from "@/components/results/recommendations";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, Share2, Download, BookOpen, Sparkles, Lock } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, Share2, BookOpen, Sparkles, Lock } from "lucide-react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LeadCaptureModal from "@/components/shared/lead-capture-modal";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import SummaryCards from "@/components/results/summary-cards";
+import SavingsChart from "@/components/results/savings-chart";
+import RecommendationsList from "@/components/results/recommendations";
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -70,42 +70,34 @@ export default function ResultsPage() {
   };
 
   if (!mounted || !result) return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
     </div>
   );
 
-  const chartData = items.map(item => ({
-    name: item.toolName,
-    value: item.monthlySpend
-  }));
-
-  const breakdownData = [
-    {
-      name: "Total",
-      current: result.totalSpend,
-      optimized: result.totalSpend - result.potentialSavings
-    }
-  ];
-
   return (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-          <div>
-            <Button asChild variant="ghost" className="mb-4 -ml-2 text-muted-foreground hover:text-foreground">
-              <Link href="/audit"><ChevronLeft className="mr-1 w-4 h-4" /> Edit Audit</Link>
-            </Button>
-            <h1 className="text-3xl md:text-4xl font-bold">Your Audit <span className="text-gradient">Results</span></h1>
-            <p className="text-muted-foreground mt-2">Generated on {new Date(result.createdAt).toLocaleDateString()}</p>
-          </div>
+    <div className="min-h-screen pt-24 pb-20 px-4 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <Link 
+          href="/audit" 
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors group"
+        >
+          <ChevronLeft className="mr-1 w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          [ BACK_TO_AUDIT_SYSTEM ]
+        </Link>
 
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 tracking-tighter">
+              AUDIT <span className="text-primary text-glow">REPORT</span>
+            </h1>
+            <p className="text-muted-foreground font-sans">
+              System Scan Complete. Found ${result.potentialSavings.toFixed(2)} in monthly optimization potential.
+            </p>
+          </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="border-white/10 glass">
-              <Download className="mr-2 w-4 h-4" /> PDF
-            </Button>
-            <Button className="bg-primary text-white shadow-premium">
-              <Share2 className="mr-2 w-4 h-4" /> Share Report
+            <Button variant="outline" className="rounded-sm border-white/10 hover:bg-white/5">
+              <Share2 className="mr-2 w-4 h-4" /> Export JSON
             </Button>
           </div>
         </div>
@@ -119,30 +111,60 @@ export default function ResultsPage() {
           <SummaryCards result={result} />
         </motion.div>
 
+        <div className="p-6 glass rounded-lg border-primary/20 bg-primary/5 mb-12 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Sparkles className="w-24 h-24" />
+          </div>
+          <h3 className="text-sm font-display font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-primary">
+            <Sparkles className="w-4 h-4" />
+            AI_INTEL_SUMMARY
+          </h3>
+          <div className="text-lg leading-relaxed text-foreground/90 max-w-4xl font-sans">
+            {isGenerating ? (
+              <span className="flex items-center gap-2 animate-pulse">
+                <Sparkles className="w-4 h-4 text-primary" />
+                CALCULATING_OPTIMAL_PATH...
+              </span>
+            ) : aiSummary || (
+              <p>Based on our cinematic audit, we've identified significant consolidation opportunities in your AI stack. Unlock the full report for the complete breakdown.</p>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <motion.div 
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-2 glass rounded-2xl border-white/5 p-8"
+            className="lg:col-span-2 glass rounded-lg border-white/5 p-8"
           >
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              Optimization Analysis
+            <h3 className="text-sm font-display font-bold mb-6 flex items-center gap-2 uppercase tracking-widest text-secondary">
+              <Sparkles className="w-4 h-4" />
+              EFFICIENCY_VISUALIZATION
             </h3>
-            <SavingsChart items={items} result={result} />
+            <div className={!userEmail ? "blur-md select-none pointer-events-none grayscale opacity-50" : ""}>
+              <SavingsChart items={items} result={result} />
+            </div>
+            {!userEmail && (
+              <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+                <div className="bg-[#141218]/80 backdrop-blur-xl border border-primary/30 p-6 rounded-sm shadow-2xl">
+                  <Lock className="w-8 h-8 text-primary mx-auto mb-4" />
+                  <p className="text-sm font-display font-bold mb-4 uppercase tracking-wider">VISUAL_DATA_LOCKED</p>
+                  <Button onClick={() => setIsModalOpen(true)} className="bg-primary text-black hover:bg-primary/90 font-bold uppercase tracking-widest text-[10px] px-6">
+                    Initialize Lead Reveal
+                  </Button>
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="glass rounded-2xl border-white/5 p-8 overflow-hidden relative"
+            className="glass rounded-lg border-white/5 p-8 overflow-hidden relative"
           >
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Lock className="w-12 h-12" />
-            </div>
-            <h3 className="text-xl font-bold mb-6">Spend Breakdown</h3>
+            <h3 className="text-sm font-display font-bold mb-6 uppercase tracking-widest text-tertiary">SPEND_BREAKDOWN</h3>
             <div className={`space-y-4 ${!userEmail ? "blur-md select-none pointer-events-none" : ""}`}>
               {items.map((item, idx) => (
                 <motion.div 
@@ -150,31 +172,33 @@ export default function ResultsPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + (idx * 0.1) }}
-                  className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5"
+                  className="flex justify-between items-center p-3 rounded-sm bg-white/5 border border-white/5 font-sans"
                 >
-                  <span className="font-medium">{item.toolName}</span>
+                  <span className="font-medium text-sm">{item.toolName}</span>
                   <span className="text-primary font-bold">${item.monthlySpend}</span>
                 </motion.div>
               ))}
             </div>
             {!userEmail && (
               <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
-                <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
-                  <p className="text-sm font-medium">Unlock full breakdown</p>
+                <div className="bg-[#141218]/80 backdrop-blur-xl border border-white/10 p-4 rounded-sm">
+                  <p className="text-[10px] font-display font-bold uppercase tracking-widest text-muted-foreground">REDACTED_DATA</p>
                 </div>
               </div>
-              </p>
-              <Button onClick={() => setIsModalOpen(true)} className="bg-primary shadow-premium">
-                Unlock Full Report
-              </Button>
-            </div>
-          )}
-
-          <div className={!userEmail ? "opacity-20 pointer-events-none grayscale" : ""}>
-            <SavingsChart data={chartData} breakdown={breakdownData} />
-            <RecommendationsList recommendations={result.recommendations} />
-          </div>
+            )}
+          </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <RecommendationsList 
+            recommendations={result.recommendations} 
+            isLocked={!userEmail} 
+          />
+        </motion.div>
 
         <LeadCaptureModal 
           isOpen={isModalOpen} 
@@ -182,23 +206,23 @@ export default function ResultsPage() {
           onSuccess={handleLeadSuccess} 
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
           <Card className="glass border-white/5 p-8 flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
               <BookOpen className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Need a Deep Dive?</h3>
-            <p className="text-muted-foreground mb-6">Get a professional consultation from Credex to optimize your entire SaaS stack beyond just AI.</p>
-            <Button className="w-full bg-white text-black hover:bg-white/90">Book a Consultation</Button>
+            <h3 className="text-xl font-display font-bold mb-2 uppercase tracking-tight">MISSION DEBRIEF</h3>
+            <p className="text-muted-foreground mb-6 text-sm font-sans">Professional stack optimization beyond AI. Book a manual intelligence consultation.</p>
+            <Button className="w-full bg-[#06b6d4] text-black hover:bg-[#06b6d4]/90 rounded-sm font-bold uppercase tracking-widest text-[10px]">Initialize Deep Dive</Button>
           </Card>
 
           <Card className="glass border-white/5 p-8 flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-6">
               <Share2 className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Share the Savings</h3>
-            <p className="text-muted-foreground mb-6">Help other founders save money. Share your audit results or the tool with your network.</p>
-            <Button variant="outline" className="w-full border-white/10 hover:bg-white/5">Generate Share Link</Button>
+            <h3 className="text-xl font-display font-bold mb-2 uppercase tracking-tight">DATA BROADCAST</h3>
+            <p className="text-muted-foreground mb-6 text-sm font-sans">Broadcast these savings to your network. Share the mission intelligence.</p>
+            <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 rounded-sm font-bold uppercase tracking-widest text-[10px]">Generate Share Link</Button>
           </Card>
         </div>
       </div>
