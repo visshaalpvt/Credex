@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* @plugin "tailwindcss-animate"; */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-background: #0a0a0c;
+  --color-foreground: #ffffff;
+
+  --color-card: #111827;
+  --color-card-foreground: #ffffff;
+
+  --color-popover: #111827;
+  --color-popover-foreground: #ffffff;
+
+  --color-primary: #4F46E5;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #06B6D4;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+
+  --color-accent: #1e1b4b;
+  --color-accent-foreground: #ffffff;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #1f2937;
+  --color-input: #1f2937;
+  --color-ring: #4F46E5;
+
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-xl border border-white/5;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#4F46E5] to-[#06B6D4];
+  }
+
+  .bg-gradient-premium {
+    @apply bg-gradient-to-br from-[#111827] via-[#0a0a0c] to-[#1e1b4b];
+  }
+
+  .shadow-premium {
+    box-shadow: 0 0 40px -10px rgba(79, 70, 229, 0.2);
+  }
+}
