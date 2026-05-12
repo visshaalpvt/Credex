@@ -39,7 +39,7 @@ export default function FAQ() {
           <p className="text-muted-foreground">Everything you need to know about the Credex AI Spend Audit.</p>
         </div>
 
-        <Accordion type="single" className="w-full">
+        <Accordion className="w-full">
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`} className="border-white/5">
               <AccordionTrigger className="text-left hover:text-primary transition-colors">
